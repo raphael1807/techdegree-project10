@@ -32,8 +32,9 @@ const CourseDetail = (props) => {
   useEffect(() => {
     axios(`${config.apiBaseUrl}/courses/${id}`)
       .then(response => {
+        console.log(response);
         // If api returns null, redirect to '/notfound` route
-        if (response.data.course === null) {
+        if (response.data === null) {
           history.push('/notfound');
         } else {
           setCourse(response.data);

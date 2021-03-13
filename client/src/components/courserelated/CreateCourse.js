@@ -21,10 +21,7 @@ function CreateCourse(props) {
   //  Statefull variables
   // ------------------------------------------
   const [course, setCourse] = useState({ title: '', description: '', estimatedTime: '', materialsNeeded: '' });
-  const [errors, setErrors] = useState(false);
-  const [titleError, setTitleError] = useState([]);
-  const [description, setDescription] = useState([]);
-  const [descriptionError, setDescriptionError] = useState([]);
+  const [errors, setErrors] = useState();
 
   // ------------------------------------------
   //  Method 1 - Change state of the values with input form values
@@ -41,7 +38,6 @@ function CreateCourse(props) {
   // ------------------------------------------
   const courseSubmit = (event) => {
     event.preventDefault();
-    userFormErrors();
     // Use values saved in state to create new course object
     const newCourse = {
       title: course.title,
@@ -70,7 +66,7 @@ function CreateCourse(props) {
         } else if (data.status === 400) {
           console.log('400');
           return data.json().then(data => {
-            setErrors({ errors: data.errors });
+            setErrors(data.errors);
           });
           // Redirects to "/error" on status of 500
         } else if (data.status === 500) {
@@ -85,32 +81,6 @@ function CreateCourse(props) {
       });
   };
 
-  // ------------------------------------------
-  // Method 3 - Form inputs Error
-  // Errors in state to be shown if inputs are not good
-  // ------------------------------------------
-  const userFormErrors = () => {
-    if (course.title.length === 0) {
-      setTitleError('Please provide a value for "Title"');
-      setErrors([true]);
-    }
-
-    if (course.title.length > 0) {
-      setTitleError("");
-      setErrors("");
-    }
-
-    if (course.description.length === 0) {
-      setDescriptionError('Please provide a value for "Description"');
-      setErrors([true]);
-    }
-
-    if (course.description.length > 0) {
-      setDescriptionError("");
-      setErrors("");
-    }
-  };
-
   return (
     <div className="bounds course--detail">
       <h1>Create Course</h1>
@@ -121,8 +91,7 @@ function CreateCourse(props) {
               <h2 className="validation--errors--label">Validation errors</h2>
               <div className="validation-errors">
                 <ul>
-                  <li>{titleError}</li>
-                  <li>{descriptionError}</li>
+                  {errors.map((error, i) => <li key={i}>{error}</li>)}
                 </ul>
               </div>
             </React.Fragment>

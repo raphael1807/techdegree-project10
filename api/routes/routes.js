@@ -42,8 +42,15 @@ router.post('/users', async (req, res) => {
     }
 
     if (!user.password) {
-        errors.push('Please provide a value for "password"');
+        if (user.password.length == 0) {
+            errors.push('Please provide a value for "password"');
+        }
+        else if (user.password !== user.confirmPassword) {
+            errors.push('The password and confirming password do not match');
+        }
     }
+
+
 
     if (errors.length > 0) {
         res.status(400).json({ errors });
@@ -111,7 +118,7 @@ router.get('/courses/:id', async (req, res) => {
             'materialsNeeded'
         ]
     });
-    res.status(200).json(course);
+    res.json(course);
 });
 
 
@@ -120,7 +127,6 @@ router.get('/courses/:id', async (req, res) => {
 // Creates a course, sets the Location header to the URI for the course, and returns no content.
 // ------------------------------------------
 router.post('/courses', authenticateUser, async (req, res) => {
-    console.log('Fuck you BITACdfdsfdsf');
     const course = req.body;
     const errors = [];
 

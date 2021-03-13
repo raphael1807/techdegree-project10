@@ -15,12 +15,7 @@ function UserSignUp(props) {
   //  Statefull variables
   // ------------------------------------------
   const [user, setUser] = useState({ firstName: '', lastName: '', emailAddress: '', password: '', confirmPassword: '' });
-  const [errors, setErrors] = useState(false);
-  const [firstNameError, setFirstNameError] = useState([]);
-  const [lastNameError, setLastNameError] = useState([]);
-  const [emailAddressError, setEmailAddressError] = useState([]);
-  const [passwordError, setPasswordError] = useState([]);
-  const [passwordMatchError, setPasswordMatchError] = useState([]);
+  const [errors, setErrors] = useState();
 
   // ------------------------------------------
   //  Method 1 - Change state of the values with input form values
@@ -37,7 +32,6 @@ function UserSignUp(props) {
   // ------------------------------------------
   const submitUser = (event) => {
     event.preventDefault();
-    userFormErrors();
     // If password matches confirm password, new user object is created with saved data in user state and continue, 
     // else setErrors called to 'password does not match'
     if (user.password === user.confirmPassword) {
@@ -46,12 +40,12 @@ function UserSignUp(props) {
         lastName: user.lastName,
         emailAddress: user.emailAddress,
         password: user.password
-      };
+      }
       // Calls createUser() from data passed to context
-      context.userData.createUser(user)
+      context.userData.createUser(newUser)
         .then(errors => {
           if (errors.length) {
-            setErrors({ errors });
+            setErrors(errors);
           } else {
             // Signs new user in + redirects them to main page
             context.actions.signIn(user.emailAddress, user.password)
@@ -65,61 +59,7 @@ function UserSignUp(props) {
           history.push('/error');
         });
     } else {
-      setErrors([true]);
-      setPasswordMatchError("Passwords need to match");
-    }
-  };
-
-  // ------------------------------------------
-  // Method 3 - Form inputs Error
-  // Errors in state to be shown if inputs are not good
-  // ------------------------------------------
-  const userFormErrors = () => {
-    if (user.firstName.length === 0) {
-      setFirstNameError('Please provide a value for "First Name"');
-      setErrors([true]);
-    }
-
-    if (user.firstName.length > 0) {
-      setFirstNameError("");
-      setErrors([false]);
-    }
-    if (user.lastName.length === 0) {
-      setLastNameError('Please provide a value for "Last Name"');
-      setErrors([true]);
-    }
-
-    if (user.lastName.length > 0) {
-      setLastNameError("");
-      setErrors([false]);
-    }
-
-    function validateEmail(email) {
-      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
-    }
-
-    console.log(user.emailAddress);
-    console.log(validateEmail(user.emailAddress));
-
-    if (!validateEmail(user.emailAddress)) {
-      setEmailAddressError('Please provide a value for "Email Address"');
-      setErrors([true]);
-    }
-
-    if (validateEmail(user.emailAddress)) {
-      setEmailAddressError("");
-      setErrors([false]);
-    }
-
-    if (user.password.length < 8 || user.password.length > 20) {
-      setPasswordError('Password must be between 8 and 20 characters');
-      setErrors([true]);
-    }
-
-    if (user.password.length >= 8) {
-      setPasswordError("");
-      setErrors([false]);
+      setErrors(['Passwords need to match']);
     }
   };
 
@@ -134,11 +74,7 @@ function UserSignUp(props) {
                 <h2 className="validation--errors--label">Validation errors</h2>
                 <div className="validation-errors">
                   <ul>
-                    <li>{firstNameError}</li>
-                    <li>{lastNameError}</li>
-                    <li>{emailAddressError}</li>
-                    <li>{passwordError}</li>
-                    <li>{passwordMatchError}</li>
+                    {errors.map((error, i) => <li key={i}>{error}</li>)}
                   </ul>
                 </div>
               </React.Fragment>

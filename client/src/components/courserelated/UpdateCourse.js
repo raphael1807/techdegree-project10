@@ -24,11 +24,7 @@ function UpdateCourse(props) {
   // ------------------------------------------
   const [course, setCourse] = useState({ title: '', description: '', estimatedTime: '', materialsNeeded: '' });
   const [user, setUser] = useState([]);
-  const [errors, setErrors] = useState(false);
-  const [titleError, setTitleError] = useState([]);
-  const [description, setDescription] = useState([]);
-  const [descriptionError, setDescriptionError] = useState([]);
-
+  const [errors, setErrors] = useState();
   // ------------------------------------------
   //  Method 1 - Change state of the values with input form values
   // ------------------------------------------
@@ -69,7 +65,6 @@ function UpdateCourse(props) {
   // ------------------------------------------
   const updateSubmit = (event) => {
     event.preventDefault();
-    userFormErrors();
     // Use state to create new updatedCourse object
     const updatedCourse = {
       id,
@@ -97,7 +92,7 @@ function UpdateCourse(props) {
           history.push(`/courses/${id}`);
         } else if (data.status === 400) {
           return data.json().then(data => {
-            setErrors({ errors: data.errors });
+            setErrors(data.errors);
           });
           // If user not the author of course data,
           // Return errors and redirect to "/forbidden" with location state prop
@@ -116,32 +111,6 @@ function UpdateCourse(props) {
       });
   };
 
-  // ------------------------------------------
-  // Method 4 - Components Error
-  // Sets errors in state to be shown to the user if there is enough info in the relevant inputs
-  // ------------------------------------------
-  const userFormErrors = () => {
-    if (course.title.length === 0) {
-      setTitleError('Please provide a value for "Title"');
-      setErrors([true]);
-    }
-
-    if (course.title.length > 0) {
-      setTitleError("");
-      setErrors("");
-    }
-
-    if (course.description.length === 0) {
-      setDescriptionError('Please provide a value for "Description"');
-      setErrors([true]);
-    }
-
-    if (course.description.length > 0) {
-      setDescriptionError("");
-      setErrors("");
-    }
-  };
-
   return (
     <div className="bounds course--detail">
       <h1>Update Course</h1>
@@ -152,8 +121,7 @@ function UpdateCourse(props) {
               <h2 className="validation--errors--label">Validation errors</h2>
               <div className="validation-errors">
                 <ul>
-                  <li>{titleError}</li>
-                  <li>{descriptionError}</li>
+                  {errors.map((error, i) => <li key={i}>{error}</li>)}
                 </ul>
               </div>
             </React.Fragment>
